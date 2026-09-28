@@ -18,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 
 import static com.base.BasePage.delay;
-import static Utilities.Utility.setUtilityDriver;
 
 public class BaseTest {
 
@@ -36,11 +35,11 @@ public class BaseTest {
         options.setBinary("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe");
 
         //below are options to configure the program to act without opening a visual browser.
-        /*options.addArguments("--headless=new");
+        options.addArguments("--headless=new");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
         options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("user-agent=Chrome/120.0.0.0");*/
+        options.addArguments("user-agent=Chrome/120.0.0.0");
         driver = new ChromeDriver(options);
         driver.manage().window().maximize();
         //implicit wait - never use it with explicit or flexible timeouts, as they can mix and cause errors. This sets a general timeout for the driver.
@@ -55,8 +54,7 @@ public class BaseTest {
         driver.get(STEAM_URL);
         basePage = new BasePage();
         basePage.setDriver(driver);
-        setUtilityDriver();
-        homePage = new SteamHomePage();
+        homePage = new SteamHomePage(driver);
     }
 
     @AfterMethod

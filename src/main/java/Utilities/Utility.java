@@ -1,6 +1,7 @@
 package Utilities;
 
 
+import com.Objects.GameItem;
 import com.base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -9,6 +10,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,15 +19,17 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.base.BasePage.driver;
+
 public class Utility {
 
-    public static WebDriver driver;
-
-    public static void setUtilityDriver(){
-        driver = BasePage.driver;
+    public static WebDriver getDriver(){
+        return driver;
     }
 
+
     public static void scrollToElementActions(By locator){
+
         WebElement element = driver.findElement(locator);
 
         new Actions(driver).scrollToElement(element).perform();
@@ -38,6 +42,7 @@ public class Utility {
         wait.until(ExpectedConditions.elementToBeClickable(locator));
     }
     public static void waitForVisible(By locator){
+
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
         //WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
@@ -68,6 +73,14 @@ public class Utility {
 
     }
 
+    public static String getDesktopPath(String filename){
+        String userHome = System.getProperty("user.home");
+        File desktopDir = new File(userHome, "Desktop");
+
+        return Paths.get(desktopDir.getAbsolutePath(), filename).toString();
+    }
+
+
     public static List<String> fromCsvToArray(String filePath){
         try(var lines = Files.lines(Paths.get(filePath))) {
             return lines
@@ -82,6 +95,7 @@ public class Utility {
             return List.of();
         }
     }
+
 
 
 

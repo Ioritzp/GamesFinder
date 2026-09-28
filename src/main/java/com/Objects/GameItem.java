@@ -6,13 +6,15 @@ public class GameItem {
     private String gameLink;
     private String gameRegularPrice;
     private String gameFinalPrice;
+    private boolean isDiscounted;
 
 
-    public GameItem(String gameName, String gameLink, String gameRegularPrice, String gameFinalPrice){
+    public GameItem(String gameName, String gameLink, String gameRegularPrice, String gameFinalPrice, boolean isDiscounted){
         this.gameName = gameName;
         this.gameLink = gameLink;
         this.gameRegularPrice = gameRegularPrice;
         this.gameFinalPrice = gameFinalPrice;
+        this.isDiscounted = isDiscounted;
 
     }
 
@@ -32,14 +34,27 @@ public class GameItem {
         return gameFinalPrice;
     }
 
+    public String getDiscounted(){
+        if(isDiscounted){
+            return "Discounted";
+        } else{
+            return "Not discounted";
+        }
+    }
+
 
     public String toCsvRow(){
         String sanitizedGameName = "\"" + gameName.replace("\"", "\"\"") + "\"";
         String sanitizedFinalGamePrice= "\"" + gameFinalPrice.replace("\"", "\"\"") + "\"";
         String sanitizedRegularGamePrice = "\"" + gameRegularPrice.replace("\"", "\"\"") + "\"";
-        String hyperLink = "\"=HYPERLINK(\"" + gameLink + "\"";
+        String hyperLink = "\"=HIPERVINCULO(\"" + gameLink + "\"; \"\"" + gameName + "\"\")\"";
+        String sanitizedDiscounted = "Discounted";
 
-        return String.join(",", sanitizedGameName, sanitizedRegularGamePrice, sanitizedFinalGamePrice, hyperLink);
+        if(!isDiscounted){
+            sanitizedDiscounted = "Not Discounted";
+        }
+
+        return String.join(",", sanitizedGameName, sanitizedRegularGamePrice, sanitizedFinalGamePrice, hyperLink, sanitizedDiscounted);
     }
 
     @Override

@@ -2,7 +2,9 @@ package com.steamPages;
 
 import Utilities.Utility;
 import com.Objects.GameItem;
+import com.base.BasePage;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
@@ -11,7 +13,7 @@ import static Utilities.GetUtility.getText;
 import static Utilities.Utility.*;
 import static Utilities.waitUtility.waitUntilUrlContains;
 
-public class SteamGamePage extends SteamHomePage{
+public class SteamGamePage extends BasePage {
 
     //private By priceWrapperLocator = By.className("game_area_purchase_game_wrapper");
     private By priceWrapperLocator = By.xpath("//div[normalize-space(@class)='game_area_purchase_game']");
@@ -21,6 +23,10 @@ public class SteamGamePage extends SteamHomePage{
     private By gameNameSource = By.id("appHubAppName");
     private By showAllDlc = By.id("dlc_show_all_link");
 
+    public SteamGamePage(WebDriver driver){
+        setDriver(driver);
+    }
+
     public GameItem getFinalPrice(String url){
         waitUntilUrlContains(5, url);
         waitForVisible(priceWrapperLocator);
@@ -29,9 +35,11 @@ public class SteamGamePage extends SteamHomePage{
         String link = "";
         String regularPrice = "";
         String finalPrice = "";
+        boolean isDiscounted = false;
         WebElement firstWrapper = driver.findElement(priceWrapperLocator);
         List<WebElement> discountElement = firstWrapper.findElements(By.className("discount_final_price"));
         if(!discountElement.isEmpty()) {
+            isDiscounted = true;
             System.out.println("entering is discounted route");
             waitForVisible(discountedPriceSource);
             scrollToElementActions(discountedPriceSource);
@@ -40,7 +48,7 @@ public class SteamGamePage extends SteamHomePage{
            link = driver.getCurrentUrl();
            regularPrice = getText(originalPriceSource);
            gameName = getText(gameNameSource);
-           return new GameItem(gameName, link, regularPrice, finalPrice);
+           return new GameItem(gameName, link, regularPrice, finalPrice, isDiscounted);
         } else {
             System.out.println("entering normal price route");
             waitForVisible(normalPriceSource);
@@ -50,7 +58,7 @@ public class SteamGamePage extends SteamHomePage{
             link = driver.getCurrentUrl();
             regularPrice = "Not discounted";
             gameName = getText(gameNameSource);
-            return new GameItem(gameName, link, regularPrice, finalPrice);
+            return new GameItem(gameName, link, regularPrice, finalPrice, isDiscounted);
         }
 
     }

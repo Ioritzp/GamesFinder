@@ -2,11 +2,10 @@ package com.steamPages;
 
 import com.base.BasePage;
 import org.openqa.selenium.By;
-import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.WebDriver;
 
 import static Utilities.ActionsUtility.scrollToViewElement;
 import static Utilities.ActionsUtility.sendKeys;
-import static Utilities.Utility.scrollToElementActions;
 import static Utilities.waitUtility.explicitWaitUntilVisible;
 
 public class SteamHomePage extends BasePage {
@@ -19,15 +18,20 @@ public class SteamHomePage extends BasePage {
 
 
     //search a game on the search bar
+    public SteamHomePage(WebDriver driver){
+        setDriver(driver);
+    }
 
     public SteamSearchPage searchGame(String gameName){
+        System.out.println("typing: " + gameName);
         sendKeys(find(searchBar), gameName);
+        System.out.println("typed: " + gameName);
         click(searchButton);
-        return new SteamSearchPage(gameName);
+        return new SteamSearchPage(driver, gameName);
     }
 
     //go to discounts
-    private void clickOffersTab(){
+    /*private void clickOffersTab(){
         explicitWaitUntilVisible(discountsTab, 5);
         scrollToViewElement(discountsTab);
         click(discountsTab);
@@ -39,6 +43,6 @@ public class SteamHomePage extends BasePage {
         scrollToViewElement(discountsButton);
         click(discountsButton);
         return new SteamDiscountsPage();
-    }
+    }*/
 
 }

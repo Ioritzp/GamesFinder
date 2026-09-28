@@ -5,9 +5,12 @@ import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
+import static com.base.BasePage.driver;
+
 public class ActionsUtility extends Utility{
 
     private static Actions act (){
+
         //actions can perform things like action movement or keyboard events
 
         //an object from the Actions class that contains methods for said actions. Actions can also be concatenated into one complex action.

@@ -4,6 +4,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 
+import static com.base.BasePage.driver;
+
 
 public class JavaScriptUtility extends Utility{
 

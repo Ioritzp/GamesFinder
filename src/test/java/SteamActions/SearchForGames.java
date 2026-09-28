@@ -2,9 +2,14 @@ package SteamActions;
 
 import Base.BaseTest;
 import com.Objects.GameItem;
+import com.base.BasePage;
 import com.steamPages.AgeCheckPage;
 import com.steamPages.NoGamePage;
 import com.steamPages.SteamGamePage;
+import com.steamPages.SteamHomePage;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.annotations.Test;
 
 import java.io.BufferedWriter;
@@ -16,39 +21,78 @@ import java.util.List;
 
 import static Utilities.Utility.fromTxtToArray;
 
-public class SearchForGames extends BaseTest {
+public class SearchForGames{
 
-    private static List<GameItem> gameList = new ArrayList<GameItem>();
-    private static String csvfilePath = "C:/Users/iorit/Desktop/gameList.csv";
-    @Test
-    public void SelectGame() {
+    private List<GameItem> gameList = new ArrayList<GameItem>();
+    private String csvfilePath;
+    private SteamHomePage homePage;
 
-        String path = (System.getProperty("user.dir"))+ "/resources/gameSources/gameList.txt";
-        String[] gamesToSearch = fromTxtToArray(path);
-        for(String gameName : gamesToSearch) {
-            System.out.println("Looking for: " + gameName);
-            var searchPage = homePage.searchGame(gameName);
-            int spaceIndex = gameName.indexOf(' ');
-            String urlKeyword = gameName.substring(0, spaceIndex);
+    public SearchForGames(String csvfilePath){
+        this.csvfilePath = csvfilePath;
+        this.gameList = new ArrayList<>();
+    }
 
-            var destinationPage = searchPage.clickOnGame();
-            if (destinationPage instanceof AgeCheckPage) {
-                var ageCheckPage = ((AgeCheckPage) destinationPage).verifyAge();
-                var gameInfo = ageCheckPage.getFinalPrice(urlKeyword);
-                processGameInfo(gameInfo);
+    private void SetupDriver(){
+        ChromeOptions options = new ChromeOptions();
+        options.setBinary("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe");
 
-            } else if (destinationPage instanceof SteamGamePage) {
-                var gameInfo = ((SteamGamePage) destinationPage).getFinalPrice(urlKeyword);
-                processGameInfo(gameInfo);
-            } else if (destinationPage instanceof NoGamePage){
-                var gameInfo = ((NoGamePage) destinationPage).returnGame(gameName);
-                processGameInfo(gameInfo);
+        //below are options to configure the program to act without opening a visual browser.
+        options.addArguments("--headless=new");
+        options.addArguments("--window-size=1920,1080");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("user-agent=Chrome/120.0.0.0");
+        BasePage.driver = new ChromeDriver(options);
+        BasePage.driver.get("https://store.steampowered.com/");
+
+        this.homePage = new SteamHomePage(BasePage.driver);
+
+        System.out.println("driver set");
+    }
+
+    public List<GameItem> SelectGame(String path, ProgressListener listener) {
+
+        this.gameList.clear();
+        try {
+            SetupDriver();
+
+            System.out.println("path: " + path);
+            String[] gamesToSearch = fromTxtToArray(path);
+            int total = gamesToSearch.length;
+            for (int i = 0; i < total; i++) {
+                String gameName = gamesToSearch[i];
+                if(listener != null){
+                    listener.onProgress(gameName,i + 1, total);
+                }
+                System.out.println("Looking for: " + gameName);
+                var searchPage = homePage.searchGame(gameName);
+                int spaceIndex = gameName.indexOf(' ');
+                String urlKeyword = gameName.substring(0, spaceIndex);
+
+                var destinationPage = searchPage.clickOnGame();
+                if (destinationPage instanceof AgeCheckPage) {
+                    var ageCheckPage = ((AgeCheckPage) destinationPage).verifyAge();
+                    var gameInfo = ageCheckPage.getFinalPrice(urlKeyword);
+                    processGameInfo(gameInfo);
+
+                } else if (destinationPage instanceof SteamGamePage) {
+                    var gameInfo = ((SteamGamePage) destinationPage).getFinalPrice(urlKeyword);
+                    processGameInfo(gameInfo);
+                } else if (destinationPage instanceof NoGamePage) {
+                    var gameInfo = ((NoGamePage) destinationPage).returnGame(gameName);
+                    processGameInfo(gameInfo);
+                }
+
+                System.out.println("--------------------------------------------------------------");
             }
 
-            System.out.println("--------------------------------------------------------------");
+            exportToCsv(gameList, csvfilePath);
+        }finally{
+            if(BasePage.driver != null){
+                BasePage.driver.quit();
+            }
         }
-
-        exportToCsv(gameList, csvfilePath);
+        return gameList;
 
 
     }
@@ -66,7 +110,7 @@ public class SearchForGames extends BaseTest {
 
     private void exportToCsv(List<GameItem> gameList, String filePath){
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, false))){
-            writer.write("Game Name, Game Regular Price, Final Price, Link");
+            writer.write("Game Name, Game Regular Price, Final Price, Link, Discount");
             writer.newLine();
 
             for(GameItem game : gameList){

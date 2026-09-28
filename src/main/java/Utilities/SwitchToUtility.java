@@ -1,5 +1,6 @@
 package Utilities;
 
+import com.base.BasePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -7,7 +8,7 @@ public class SwitchToUtility extends Utility{
 
     //allows us to switch to another element of the DOM in cases we can't inspect and get the paths, such as in alerts.
     private static WebDriver.TargetLocator switchTo(){
-        return driver.switchTo();
+        return BasePage.driver.switchTo();
     }
 
     public static String getAlertText(){

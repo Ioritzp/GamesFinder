@@ -1,8 +1,11 @@
 package Utilities;
 
+import com.base.BasePage;
 import org.openqa.selenium.By;
 
 import java.util.Set;
+
+import static com.base.BasePage.driver;
 
 public class GetUtility extends Utility{
 

@@ -1,5 +1,6 @@
 package Utilities;
 
+import com.base.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -8,6 +9,8 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+
+import static com.base.BasePage.driver;
 
 public class waitUtility extends Utility{
 
