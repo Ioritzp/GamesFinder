@@ -98,7 +98,7 @@ In `src/test/java/SteamActions/SearchForGames.java` (line 37):
 
 ```java
 // For Brave Browser (default):
-options.setBinary("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe");
+//options.setBinary("C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe");
 
 // For Standard Google Chrome (comment out or point to chrome.exe):
 // options.setBinary("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
