@@ -32,6 +32,7 @@ public class GameItem {
         return gameFinalPrice;
     }
 
+
     public String toCsvRow(){
         String sanitizedGameName = "\"" + gameName.replace("\"", "\"\"") + "\"";
         String sanitizedFinalGamePrice= "\"" + gameFinalPrice.replace("\"", "\"\"") + "\"";

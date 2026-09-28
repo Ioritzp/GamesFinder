@@ -3,6 +3,7 @@ package SteamActions;
 import Base.BaseTest;
 import com.Objects.GameItem;
 import com.steamPages.AgeCheckPage;
+import com.steamPages.NoGamePage;
 import com.steamPages.SteamGamePage;
 import org.testng.annotations.Test;
 
@@ -10,13 +11,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static Utilities.Utility.fromCsvToArray;
 import static Utilities.Utility.fromTxtToArray;
 
 public class SearchForGames extends BaseTest {
@@ -26,18 +23,7 @@ public class SearchForGames extends BaseTest {
     @Test
     public void SelectGame() {
 
-        //TODO: exceptions must be handled - if a game doesn't exist or similar, it should jump to the next instead of crashing.
-
-        //TODO: expand the program to check if the csv exists. If it does, it must upgrade it. First, the games from the new list will be rechecked and if there are changes, update the link/price/discount. next, if there are new games, they must be added
         String path = (System.getProperty("user.dir"))+ "/resources/gameSources/gameList.txt";
-        boolean csvExists = false;
-        Path csvPath = Paths.get(path);
-        if(Files.exists(csvPath) && Files.isRegularFile(csvPath)){
-            csvExists = true;
-        }
-        if(csvExists){
-            List<String> currentGames = fromCsvToArray(path);
-        }
         String[] gamesToSearch = fromTxtToArray(path);
         for(String gameName : gamesToSearch) {
             System.out.println("Looking for: " + gameName);
@@ -53,6 +39,9 @@ public class SearchForGames extends BaseTest {
 
             } else if (destinationPage instanceof SteamGamePage) {
                 var gameInfo = ((SteamGamePage) destinationPage).getFinalPrice(urlKeyword);
+                processGameInfo(gameInfo);
+            } else if (destinationPage instanceof NoGamePage){
+                var gameInfo = ((NoGamePage) destinationPage).returnGame(gameName);
                 processGameInfo(gameInfo);
             }
 
@@ -76,7 +65,7 @@ public class SearchForGames extends BaseTest {
     }
 
     private void exportToCsv(List<GameItem> gameList, String filePath){
-        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8))){
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, false))){
             writer.write("Game Name, Game Regular Price, Final Price, Link");
             writer.newLine();
 
